@@ -89,7 +89,7 @@
 	},
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "hatschi:stephen-dwq@github.com",
+			"id": "hatschi@stephen-dwq.github.com",
 			"strict_min_version": "58.0"
 		}
 	}
