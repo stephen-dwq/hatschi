@@ -1,3 +1,5 @@
+const FoeCrypto = require("./crypto-helper");
+
 /*
  * **************************************************************************************
  * Copyright (C) 2026 FoE-Helper team - All Rights Reserved
@@ -12,7 +14,16 @@
  */
 if (typeof globalThis.FoEproxy == 'undefined') {
     globalThis.FoEproxy = (function () {
+        let globalID = 1;
+        const HASH_KEY = 'fMFdfeD6P1I/AsqSd+fTh42ZWwA50ZY0ZVwe39ctH8HyScAorLoF6xbxXseITzk1YQ2xG3bS7fqAHwmn5oNpXA=='; // from ForgeHX-*.js
+        let firstSig = null; // first md5 hash
+        let jsonHash = null; // ?h= param
+        let clientID = null;
+
         const requestInfoHolder = new WeakMap();
+        let proxyEnabled = true;
+        let xhrQueue = [];
+
         function getRequestData(xhr) {
             let data = requestInfoHolder.get(xhr);
             if (data != null) return data;
@@ -22,16 +33,14 @@ if (typeof globalThis.FoEproxy == 'undefined') {
             return data;
         }
 
-        let proxyEnabled = true;
-        let xhrQueue = [];
-
         // ###########################################
         // ################# XHR-Proxy ###############
         // ###########################################
 
         const XHR = XMLHttpRequest.prototype,
             open = XHR.open,
-            send = XHR.send;
+            send = XHR.send,
+            setRequestHeader = XHR.setRequestHeader;
 
         /**
          * @param {string} method
@@ -42,6 +51,14 @@ if (typeof globalThis.FoEproxy == 'undefined') {
                 const data = getRequestData(this);
                 data.method = method;
                 data.url = url;
+
+                if (jsonHash == null && url) {
+                    const match = url.match(/.*\?h=([0-9a-zA-Z_-]+)(&|$)/);
+                    if (null != match) {
+                        jsonHash = match[1];
+                        console.log("JSON  |  " + jsonHash);
+                    }
+                }
             }
             // @ts-ignore
             return open.apply(this, arguments);
@@ -138,8 +155,8 @@ if (typeof globalThis.FoEproxy == 'undefined') {
         function xhrOnSend(data) {
             if (!proxyEnabled) return;
             if (!data) return;
+
             try {
-                
                 let posts = [];
 
                 if (typeof data === 'object' && data instanceof ArrayBuffer) {
@@ -168,24 +185,70 @@ if (typeof globalThis.FoEproxy == 'undefined') {
 
                 for (let post of posts) {
                     if (!post || !post.requestClass || !post.requestMethod || !post.requestData) return;
+
+                    if (post.requestId) {
+                        globalID = (globalID > post.requestId) ? globalID : post.requestId;
+                        post.requestId = globalID++;
+                    }
+
                     FoEproxy._proxyRequestAction(post.requestClass, post.requestMethod, post);
                 }
+
+                return JSON.stringify(posts);
             } catch (e) {
                 console.log('Can\'t parse postData: ', data, e);
             }
+
+            return data;
         }
 
         XHR.send = function (postData) {
             if (proxyEnabled) {
-                const data = getRequestData(this);
-                data.postData = postData;
-                xhrOnSend(postData);
+                const requestData = getRequestData(this);
+
+                const modifiedData = xhrOnSend(postData);
+
+                if (modifiedData !== undefined)
+                    postData = modifiedData;
+
                 this.addEventListener('load', xhrOnLoadHandler, { capture: false, passive: true });
+
+                if (requestData.url && requestData.url.includes(jsonHash) &&
+                    typeof FoeCrypto !== 'undefined' && jsonHash && HASH_KEY) {
+                    const sig = FoeCrypto.generateSignature(jsonHash, HASH_KEY, postData);
+
+                    if (globalID == 3 && sig != firstSig) {
+                        alert("FIND NEW HASH KEY");
+                        throw '';
+                    } else if (globalID == 3) {
+                        console.log("SAFE KEY");
+                    }
+
+                    setRequestHeader.call(this, 'Signature', sig);
+                    postData = FoeCrypto.blobber(postData);
+                }
+
+                requestData.postData = postData;
             }
 
             // @ts-ignore
             return send.apply(this, arguments);
         };
+
+        XHR.setRequestHeader = function (header, value) {
+            if (header == "Signature") {
+                if (firstSig == null) {
+                    firstSig = value;
+                    console.log("FIRST SIG  |  " + firstSig);
+                }
+                return;
+            }
+
+            if (clientID == null && getRequestData(this).url.includes("game/json?h=") && header == "Client-Identification")
+                clientID = value;
+
+            return setRequestHeader.apply(this, arguments);
+        }
 
         // Public API für Queue-Verarbeitung
         return {
@@ -271,6 +334,16 @@ if (typeof globalThis.FoEproxy == 'undefined') {
         }
 
         WebSocket.prototype.send = function (data) {
+            if ("PING" != data) {
+                posts = JSON.parse(data);
+                if (posts.requestId == 1 || posts.requestId == 2) {
+                    alert("WEBSOCKET WENT FIRST");
+                    throw '';
+                }
+                posts.requestId = globalID++;
+                data = JSON.stringify(posts)
+            }
+
             oldWSSend.call(this, data);
             if (proxyEnabled && !observedWebsockets.has(this)) {
                 observedWebsockets.add(this);

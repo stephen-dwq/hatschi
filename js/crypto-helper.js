@@ -1,6 +1,6 @@
 /**
  * Crypto Helper for FoE Proxy
- * Contains exact implementations of ff() and GW.encode() from the original
+ * Contains exact implementations of arrayBuffer augmentation and MD5 from ForgeHX-*.js
  */
 
 const FoeCrypto = (function () {
@@ -20,16 +20,14 @@ const FoeCrypto = (function () {
         for (let i = 0; i < str.length; i++) {
             let code = str.charCodeAt(i);
 
-            // Handle surrogate pairs exactly like original
             if (code >= 0xD800 && code <= 0xDBFF && i + 1 < str.length) {
                 const nextCode = str.charCodeAt(i + 1);
                 if (nextCode >= 0xDC00 && nextCode <= 0xDFFF) {
                     code = ((code - 0xD800) << 10) + (nextCode - 0xDC00) + 0x10000;
-                    i++; // Skip next character as we've processed it
+                    i++;
                 }
             }
 
-            // UTF-8 encoding exactly as in original
             if (code <= 0x7F) {
                 bytes.push(code);
             } else if (code <= 0x7FF) {
@@ -229,9 +227,6 @@ const FoeCrypto = (function () {
         return hex;
     }
 
-    // ========================================================================
-    // Public API
-    // ========================================================================
     return {
         /**
          * Creates a binary wrapper with hxBytes and bytes properties
