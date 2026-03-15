@@ -3,7 +3,7 @@
  * Contains exact implementations of ff() and GW.encode() from the original
  */
 
-const FoeCrypto = (function() {
+const FoeCrypto = (function () {
     "use strict";
 
     // ========================================================================
@@ -18,7 +18,7 @@ const FoeCrypto = (function() {
     }
 
     // Static method to create FF from string (exact original UTF-8 encoding)
-    FF.ofString = function(str) {
+    FF.ofString = function (str) {
         const bytes = [];
 
         for (let i = 0; i < str.length; i++) {
@@ -247,17 +247,30 @@ const FoeCrypto = (function() {
     return {
         /**
          * Creates a binary wrapper with hxBytes and bytes properties
+         * Probably not necessary for export
          * @param {ArrayBuffer} arrayBuffer - The buffer to wrap
          * @returns {FF} FF instance
          */
         FF: FF,
 
         /**
+         * GW.encode - Hash function (exact original implementation)
+         * Probably not necessary for export
+         * @param {string} str - Input string to hash
+         * @returns {string} Hex hash string
+         */
+        encode: function (str) {
+            const blocks = str2blks(str);
+            const hash = doEncode(blocks);
+            return toHex(hash);
+        },
+
+        /**
          * Creates a blob from a string with FF properties attached
          * @param {string} str - Input string
          * @returns {ArrayBuffer} Buffer with hxBytes and bytes properties
          */
-        blobber: function(str) {
+        blobber: function (str) {
             const encoder = new TextEncoder();
             const encodedString = encoder.encode(str);
             const buffer = encodedString.buffer;
@@ -266,25 +279,15 @@ const FoeCrypto = (function() {
         },
 
         /**
-         * GW.encode - Hash function (exact original implementation)
-         * @param {string} str - Input string to hash
-         * @returns {string} Hex hash string
-         */
-        encode: function(str) {
-            const blocks = str2blks(str);
-            const hash = doEncode(blocks);
-            return toHex(hash);
-        },
-
-        /**
          * Generate signature for FoE requests
          * @param {string} jsonHash - The ?h= parameter from URL
+         * @param {string} hash - The '*==' parameter from ForgeHX-*.js
          * @param {string} postData - The request post data
          * @returns {string} 10-character signature
          */
-        generateSignature: function(jsonHash, postData) {
-            const hash = this.encode(jsonHash + hash + postData);
-            return hash.substring(1, 11);
+        generateSignature: function (jsonHash, hash, postData) {
+            const fullSig = this.encode(jsonHash + hash + postData);
+            return fullSig.substring(1, 11);
         }
     };
 })();
