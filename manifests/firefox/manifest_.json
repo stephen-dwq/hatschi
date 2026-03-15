@@ -46,6 +46,7 @@
 				"*forgeofempires.com/game*"
 			],
 			"js": [
+				"js/crypto-helper.js",
 				"js/foeproxy.js"
 			],
 			"run_at": "document_start",
