@@ -6,9 +6,6 @@
 const FoeCrypto = (function () {
     "use strict";
 
-    // ========================================================================
-    // FF Class - Binary wrapper (exact original implementation)
-    // ========================================================================
     function FF(arrayBuffer) {
         this.length = arrayBuffer.byteLength;
         this.b = new Uint8Array(arrayBuffer);
@@ -17,7 +14,6 @@ const FoeCrypto = (function () {
         arrayBuffer.bytes = this.b;
     }
 
-    // Static method to create FF from string (exact original UTF-8 encoding)
     FF.ofString = function (str) {
         const bytes = [];
 
@@ -132,7 +128,6 @@ const FoeCrypto = (function () {
         return blocks;
     }
 
-    // Main MD5 transformation (exact original sequence)
     function doEncode(blocks) {
         let a = 1732584193;
         let b = -271733879;
@@ -145,7 +140,6 @@ const FoeCrypto = (function () {
             const cc = c;
             const dd = d;
 
-            // Round 1
             a = ff(a, b, c, d, blocks[i], 7, T[0]);
             d = ff(d, a, b, c, blocks[i + 1], 12, T[1]);
             c = ff(c, d, a, b, blocks[i + 2], 17, T[2]);
@@ -163,7 +157,6 @@ const FoeCrypto = (function () {
             c = ff(c, d, a, b, blocks[i + 14], 17, T[14]);
             b = ff(b, c, d, a, blocks[i + 15], 22, T[15]);
 
-            // Round 2
             a = gg(a, b, c, d, blocks[i + 1], 5, T[16]);
             d = gg(d, a, b, c, blocks[i + 6], 9, T[17]);
             c = gg(c, d, a, b, blocks[i + 11], 14, T[18]);
@@ -181,7 +174,6 @@ const FoeCrypto = (function () {
             c = gg(c, d, a, b, blocks[i + 7], 14, T[30]);
             b = gg(b, c, d, a, blocks[i + 12], 20, T[31]);
 
-            // Round 3
             a = hh(a, b, c, d, blocks[i + 5], 4, T[32]);
             d = hh(d, a, b, c, blocks[i + 8], 11, T[33]);
             c = hh(c, d, a, b, blocks[i + 11], 16, T[34]);
@@ -199,7 +191,6 @@ const FoeCrypto = (function () {
             c = hh(c, d, a, b, blocks[i + 15], 16, T[46]);
             b = hh(b, c, d, a, blocks[i + 2], 23, T[47]);
 
-            // Round 4
             a = ii(a, b, c, d, blocks[i], 6, T[48]);
             d = ii(d, a, b, c, blocks[i + 7], 10, T[49]);
             c = ii(c, d, a, b, blocks[i + 14], 15, T[50]);
@@ -217,7 +208,6 @@ const FoeCrypto = (function () {
             c = ii(c, d, a, b, blocks[i + 2], 15, T[62]);
             b = ii(b, c, d, a, blocks[i + 9], 21, T[63]);
 
-            // Add this chunk's hash
             a = addme(a, aa);
             b = addme(b, bb);
             c = addme(c, cc);
@@ -227,12 +217,10 @@ const FoeCrypto = (function () {
         return [a, b, c, d];
     }
 
-    // Convert hash to hex string (exact original format)
     function toHex(hashArray) {
         let hex = '';
         for (let i = 0; i < hashArray.length; i++) {
             const num = hashArray[i];
-            // Original outputs 8 hex chars per number (4 bytes)
             hex += ((num >>> 0) & 0xFF).toString(16).padStart(2, '0');
             hex += ((num >>> 8) & 0xFF).toString(16).padStart(2, '0');
             hex += ((num >>> 16) & 0xFF).toString(16).padStart(2, '0');
@@ -242,7 +230,7 @@ const FoeCrypto = (function () {
     }
 
     // ========================================================================
-    // Public API (exactly what you need)
+    // Public API
     // ========================================================================
     return {
         /**
