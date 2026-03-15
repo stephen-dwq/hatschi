@@ -6,3 +6,5 @@ bug.PNG
 desktop.ini
 .DS_Store
 Icon?
+/build
+/*.xpi
