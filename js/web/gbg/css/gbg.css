@@ -1,0 +1,21 @@
+/**
+ * GBG CSS formatter for FoEProxy
+ * Used by gbg.js
+ */
+
+#gbgMenu {
+    top: calc(50vh + 165px);
+    left: calc(50vw - 180px);
+}
+
+#gbgMenuBody {
+    width: 420px;
+	height: fit-content;
+    display: flex;
+	flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 120%;
+	margin-top: 10px;
+}
