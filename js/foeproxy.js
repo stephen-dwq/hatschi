@@ -1,5 +1,3 @@
-const FoeCrypto = require("./crypto-helper");
-
 /*
  * **************************************************************************************
  * Copyright (C) 2026 FoE-Helper team - All Rights Reserved
@@ -19,6 +17,7 @@ if (typeof globalThis.FoEproxy == 'undefined') {
         let firstSig = null; // first md5 hash
         let jsonHash = null; // ?h= param
         let clientID = null;
+        let contentType = "application/json";
 
         const requestInfoHolder = new WeakMap();
         let proxyEnabled = true;
@@ -252,6 +251,16 @@ if (typeof globalThis.FoEproxy == 'undefined') {
 
         // Public API für Queue-Verarbeitung
         return {
+            sendRequest: function (postData, onLoad) {
+                const newReq = new XMLHttpRequest();
+                newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + jsonHash);
+                newReq.setRequestHeader("Client-Identification", clientID);
+                newReq.setRequestHeader("Content-Type", contentType);
+
+                newReq.onload = onLoad;
+
+                newReq.send(FoeCrypto.blobber(postData));
+            },
             _setXhrQueue: (queue) => { xhrQueue = queue; },
             _getXhrQueue: () => xhrQueue,
             _setProxyEnabled: (enabled) => { proxyEnabled = enabled; },
