@@ -12,10 +12,11 @@
  */
 if (typeof globalThis.FoEproxy == 'undefined') {
     globalThis.FoEproxy = (function () {
-        let globalID = 1;
+        globalThis.globalID = 1;
         const HASH_KEY = 'fMFdfeD6P1I/AsqSd+fTh42ZWwA50ZY0ZVwe39ctH8HyScAorLoF6xbxXseITzk1YQ2xG3bS7fqAHwmn5oNpXA=='; // from ForgeHX-*.js
         let firstSig = null; // first md5 hash
         let jsonHash = null; // ?h= param
+        let baseURL = null; // detected base URL in form "https://xx.forgeofempires.com/game/json"
         let clientID = null;
         let contentType = "application/json";
 
@@ -56,6 +57,12 @@ if (typeof globalThis.FoEproxy == 'undefined') {
                     if (null != match) {
                         jsonHash = match[1];
                         console.log("JSON  |  " + jsonHash);
+                        // Extract base URL in form "https://xx.forgeofempires.com/game/json"
+                        const baseURLMatch = url.match(/(https:\/\/[^\/]+\/game\/json)/);
+                        if (null != baseURLMatch) {
+                            baseURL = baseURLMatch[1];
+                            console.log("BASE URL  |  " + baseURL);
+                        }
                     }
                 }
             }
@@ -186,8 +193,8 @@ if (typeof globalThis.FoEproxy == 'undefined') {
                     if (!post || !post.requestClass || !post.requestMethod || !post.requestData) return;
 
                     if (post.requestId) {
-                        globalID = (globalID > post.requestId) ? globalID : post.requestId;
-                        post.requestId = globalID++;
+                        globalThis.globalID = (globalThis.globalID > post.requestId) ? globalThis.globalID : post.requestId;
+                        post.requestId = globalThis.globalID++;
                     }
 
                     FoEproxy._proxyRequestAction(post.requestClass, post.requestMethod, post);
@@ -216,10 +223,10 @@ if (typeof globalThis.FoEproxy == 'undefined') {
                     typeof FoeCrypto !== 'undefined' && jsonHash && HASH_KEY) {
                     const sig = FoeCrypto.generateSignature(jsonHash, HASH_KEY, postData);
 
-                    if (globalID == 3 && sig != firstSig) {
+                    if (globalThis.globalID == 3 && sig != firstSig) {
                         alert("FIND NEW HASH KEY");
                         throw '';
-                    } else if (globalID == 3) {
+                    } else if (globalThis.globalID == 3) {
                         console.log("SAFE KEY");
                     }
 
@@ -253,7 +260,7 @@ if (typeof globalThis.FoEproxy == 'undefined') {
         return {
             sendRequest: function (postData, onLoad) {
                 const newReq = new XMLHttpRequest();
-                newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + jsonHash);
+                newReq.open("POST", baseURL + "?h=" + jsonHash);
                 newReq.setRequestHeader("Client-Identification", clientID);
                 newReq.setRequestHeader("Content-Type", contentType);
 
@@ -349,7 +356,7 @@ if (typeof globalThis.FoEproxy == 'undefined') {
                     alert("WEBSOCKET WENT FIRST");
                     throw '';
                 }
-                posts.requestId = globalID++;
+                posts.requestId = globalThis.globalID++;
                 data = JSON.stringify(posts)
             }
 
