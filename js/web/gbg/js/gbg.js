@@ -5,7 +5,6 @@
 
 FoEproxy.addHandler('AnnouncementsService', 'fetchAllAnnouncements', (data, postData) => {
     // Closes the box when the player navigates back to the city
-    gbg.active = false;
     HTML.CloseOpenBox('gbgMenu');
 });
 
@@ -15,14 +14,10 @@ FoEproxy.addHandler('GuildBattlegroundStateService', 'getState', (data, postData
         return;
     }
 
-    gbg.active = true;
     gbg.ShowMapDialog();
 });
 
 let gbg = {
-
-    active: false,
-
     ShowMapDialog: () => {
         let body = [];
 
@@ -279,7 +274,7 @@ FoEproxy.addHandler('GuildBattlegroundService', 'getBattleground', (data, postDa
 Gets ID of province being attacked, and the number of waves in battle.
  */
 FoEproxy.addHandler('BattlefieldService', 'getArmyPreview', (data, postData) => {
-    if (!gbg.active) return;
+    if ($('#gbgMenu').length <= 0) return;
     gbg.currentTarget = postData[0].requestData[0].provinceId;
     gbg.waveCount = data.responseData.length;
 });
@@ -290,7 +285,7 @@ Continues using units with 10 HP, replaces rest with full HP
 Mimics "Refresh Units" button.
  */
 FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData) => {
-    if (!gbg.active) return;
+    if ($('#gbgMenu').length <= 0) return;
     gbg.templateId = data.responseData.templates[0].id;
     gbg.template = data.responseData.templates[0].unitTypeIds;
 
@@ -345,7 +340,7 @@ FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData)
 Checks if previous battle was won
  */
 FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) => {
-    if (!gbg.active) return;
+    if ($('#gbgMenu').length <= 0) return;
     gbg.battlesWon = data.responseData.battleType.battlesWon;
     gbg.won = (data.responseData.state.winnerBit == 1);
     gbg.era = data.responseData.battleType.era;
@@ -355,7 +350,7 @@ FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) 
 Increments diamond and FP rewards
  */
 FoEproxy.addHandler('RewardService', 'collectReward', (data, postData) => {
-    if (!gbg.active) return;
+    if ($('#gbgMenu').length <= 0) return;
     if (data.responseData[0][0].subType == "strategy_points") {
         gbg.fp += 10;
     }
