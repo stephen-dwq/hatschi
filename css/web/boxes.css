@@ -568,6 +568,10 @@ p {
     border: 1px solid var(--text-darker);
 }
 
+[id$=fsp-Btn] span {
+	background-image: url('../images/menu/fsp.png');
+}
+
 [id$=market-Btn] span {
 	background-image: url('../images/menu/market.png');
 }
@@ -1062,12 +1066,12 @@ FP-Bar */
 	background-image: url('../../js/web/strategy-points/images/fp-bar-buyable-bg.png');
 }
 
-#fp-bar .fp-storage div, 
+#fp-bar .fp-storage div,
 #fp-bar .buyable-fp div {
 	margin: 5px 0 0 30px;
 }
 
-#fp-bar .small-screen .fp-storage, 
+#fp-bar .small-screen .fp-storage,
 #fp-bar .small-screen .buyable-fp {
 	background-color: rgba(0, 0, 0, 0.75);
 	border: 1px solid rgba(243, 214, 160, 0.65);
@@ -1889,7 +1893,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .hud-btn-left,
-.hud-btn-right, 
+.hud-btn-right,
 .hud-btn-left::before,
 .hud-btn-right::before {
 	position: absolute;
@@ -2404,7 +2408,7 @@ tr.sorter-header th:not(.no-sort).descending:after {
 	#game_body {
 		overflow: hidden
 	}
-	
+
 }
 @media (max-width: 1420px) {
 	#fp-bar {

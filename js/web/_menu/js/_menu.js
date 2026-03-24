@@ -27,8 +27,9 @@ let _menu = {
 	TopOffset: 0,
 
 	MenuOptions: ['BottomBar', 'RightBar', 'Box'],
-	
+
 	Items: [
+		'fsp',
 		'calculator',
 		'partCalc',
 		'outpost',
@@ -78,8 +79,8 @@ let _menu = {
 	 * @constructor
 	 */
 	CallSelectedMenu: (selMenu = 'RightBar') => {
-	
-		window.onresize = (function(event){
+
+		window.onresize = (function (event) {
 			if (event.target == window) _menu.OverflowCheck()
 		})
 
@@ -94,21 +95,21 @@ let _menu = {
 		else if (selMenu === 'Box') {
 			_menu.selectedMenu = 'Box';
 			_menu_box.BuildBoxMenu();
-        }
+		}
 
-		if(Settings.GetSetting('AutoOpenInfoBox')){
+		if (Settings.GetSetting('AutoOpenInfoBox')) {
 			Infoboard.Show();
 		}
 
 		if (Settings.GetSetting('AutoOpenCloseBox')) {
 			CloseBox.BuildBox();
 		}
-		
+
 		_menu.OverflowCheck(_menu.selectedMenu, true);
 	},
 
-	OverflowCheck: (selMenu='Box', flag) => {
-		if (window.innerHeight >= 600 && window.innerWidth >= 950 && (!flag && selMenu != MainParser.SelectedMenu)) {			
+	OverflowCheck: (selMenu = 'Box', flag) => {
+		if (window.innerHeight >= 600 && window.innerWidth >= 950 && (!flag && selMenu != MainParser.SelectedMenu)) {
 			$('#menu_box').remove();
 			$('.tooltip').remove();
 			_menu.CallSelectedMenu(MainParser.SelectedMenu);
@@ -122,8 +123,7 @@ let _menu = {
 	 * @constructor
 	 */
 	HideButton: (buttonId) => {
-		if ($('#foe-helper-hud-slider').has(`div#${buttonId}`).length > 0)
-		{
+		if ($('#foe-helper-hud-slider').has(`div#${buttonId}`).length > 0) {
 			$($('#foe-helper-hud-slider').children(`div#${buttonId}`)[0]).hide();
 		}
 	},
@@ -133,13 +133,12 @@ let _menu = {
 	 * Shows a hidden button again
 	 */
 	ShowButton: (buttonId) => {
-		if ($('#foe-helper-hud-slider').has(`div#${buttonId}`))
-		{
+		if ($('#foe-helper-hud-slider').has(`div#${buttonId}`)) {
 			$($('#foe-helper-hud-slider').children(`div#${buttonId}`)[0]).show();
 		}
 	},
 
-	
+
 	/**
 	 * Tooltip Box
 	 *
@@ -154,7 +153,7 @@ let _menu = {
 		let pos = (_menu.selectedMenu === 'RightBar' ? 'left' : 'top');
 
 		// fix the tooltip position when menu is box and at the top border
-		if(_menu.selectedMenu === 'Box' && _menu.TopOffset < 120){
+		if (_menu.selectedMenu === 'Box' && _menu.TopOffset < 120) {
 			pos = 'bottom';
 		}
 
@@ -228,16 +227,14 @@ let _menu = {
 		_menu.Items = unique(_menu.Items);
 
 		// remove all hidden items
-		if(HiddenItems !== null)
-		{
+		if (HiddenItems !== null) {
 			let hiddenItems = JSON.parse(HiddenItems);
 			_menu.HiddenItems = hiddenItems;
 			_menu.Items = _menu.Items.filter(val => !hiddenItems.includes(val));
 		}
 
 		// Menüpunkte einbinden
-		for (let i in _menu.Items)
-		{
+		for (let i in _menu.Items) {
 			if (!_menu.Items.hasOwnProperty(i)) {
 				break;
 			}
@@ -256,13 +253,12 @@ let _menu = {
 
 	/**
 	 * Toggle a menu buttons' visibility, update HiddenItems and corresponding settings button
-	 * 
-	 * @param name 
+	 *
+	 * @param name
 	 */
 	ToggleItemVisibility: (name) => {
 
-		if(_menu.HiddenItems.includes(name))
-		{
+		if (_menu.HiddenItems.includes(name)) {
 			$('#' + name + '-Btn').removeClass('btn-hidden');
 			$('#setting-' + name + '-Btn').removeClass('hud-btn-red');
 
@@ -277,11 +273,11 @@ let _menu = {
 
 			_menu.HiddenItems.push(name);
 		}
-		
+
 		localStorage.setItem('MenuHiddenItems', JSON.stringify(_menu.HiddenItems));
 
 		// refresh the Menü after setting-toggle
-		setTimeout(()=> {
+		setTimeout(() => {
 			$('#foe-helper-hud, #menu_box').remove();
 			_menu.CallSelectedMenu(MainParser.SelectedMenu);
 		}, 100);
@@ -305,7 +301,7 @@ let _menu = {
 	},
 
 
-	MakeButton: (slug, titel, desc, red = false)=> {
+	MakeButton: (slug, titel, desc, red = false) => {
 
 		let btn = _menu.toolTipp(
 			$('<div />').attr({
@@ -317,7 +313,7 @@ let _menu = {
 			`${slug}-btn`
 		);
 
-		if(red) {
+		if (red) {
 			btn.addClass('hud-btn-red');
 		}
 
@@ -326,6 +322,24 @@ let _menu = {
 
 	/*----------------------------------------------------------------------------------------------------------------*/
 	/*----------------------------------------------------------------------------------------------------------------*/
+
+
+	/**
+	 * FSP
+	 */
+	fsp_Btn: () => {
+		let btn = _menu.MakeButton(
+			'fsp',
+			'Menu.Fsp.Title',
+			'Menu.Fsp.Desc'
+		);
+
+		let btn_sp = $('<span />').on('click', function () {
+			fsp.Show();
+		});
+
+		return btn.append(btn_sp);
+	},
 
 	/**
 	 * Armies
@@ -390,7 +404,7 @@ let _menu = {
 		let btn_Own = $('<span />').on('click', function () {
 			// nur wenn es für diese Session ein LG gibt zünden
 			//if (Parts.CityMapEntity !== undefined && Parts.Rankings !== undefined) {
-				Parts.Show();
+			Parts.Show();
 			//}
 		});
 
@@ -481,7 +495,7 @@ let _menu = {
 	productions_Btn: () => {
 		let pB = _menu.MakeButton('productions', i18n('Menu.Productions.Title'), i18n('Menu.Productions.Desc'));
 
-		let btnSpan = $('<span />').on('click', function() {
+		let btnSpan = $('<span />').on('click', function () {
 			Productions.init();
 		});
 
@@ -561,7 +575,7 @@ let _menu = {
 			}
 		});
 
-		btn_playerProfile.append('<img src="'+srcLinks.GetPortrait(ExtPlayerAvatar)+'" />');
+		btn_playerProfile.append('<img src="' + srcLinks.GetPortrait(ExtPlayerAvatar) + '" />');
 
 		return btn_playerProfileBG.append(btn_playerProfile);
 	},
@@ -586,7 +600,7 @@ let _menu = {
 	 *
 	 * @returns {*|jQuery}
 	 */
-	
+
 	findGB_Btn: () => {
 
 		let btn_ = _menu.MakeButton('findGB', i18n('Boxes.findGB.Title'), i18n('Menu.findGB.Desc'));
@@ -607,7 +621,7 @@ let _menu = {
 		let btn_TechBG = _menu.MakeButton(
 			'technologies',
 			i18n('Menu.Technologies.Title'),
-			//'<em id="technologies-Btn-closed" class="tooltip-error">' + i18n('Menu.Technologies.Warning') + '<br></em>' + 
+			//'<em id="technologies-Btn-closed" class="tooltip-error">' + i18n('Menu.Technologies.Warning') + '<br></em>' +
 			i18n('Menu.Technologies.Desc'),
 			//true
 		);
@@ -667,9 +681,9 @@ let _menu = {
 		let btn_QIMapBG = _menu.MakeButton('qiMap', i18n('Menu.QIMap.Title'), i18n('Menu.QIMap.Desc'), true);
 
 		let btn_QIMap = $('<span />').on('click', function () {
-			if (Object.keys(QIMap.CurrentMapData).length > 0) 
+			if (Object.keys(QIMap.CurrentMapData).length > 0)
 				QIMap.showBox()
-			
+
 		});
 
 		return btn_QIMapBG.append(btn_QIMap);
@@ -697,7 +711,7 @@ let _menu = {
 			Recurring.init();
 		})
 
-		return btn_RewardsBG.append(btn_Rewards, $(`<span id="recurring-count" class="hud-counter" style="${!Recurring.data.count || !Recurring.data.showCounter?"display:none;":""}">${Recurring.data.count || 0}</span>`));
+		return btn_RewardsBG.append(btn_Rewards, $(`<span id="recurring-count" class="hud-counter" style="${!Recurring.data.count || !Recurring.data.showCounter ? "display:none;" : ""}">${Recurring.data.count || 0}</span>`));
 	},
 
 	/**
@@ -737,7 +751,7 @@ let _menu = {
 	stats_Btn: () => {
 		let btn_StatsBG = _menu.MakeButton('stats', i18n('Menu.Stats.Title'), i18n('Menu.Stats.Desc'));
 
-		let btn_Stats = $('<span />').on('click', function() {
+		let btn_Stats = $('<span />').on('click', function () {
 			Stats.page = 1;
 			Stats.filterByPlayerId = null;
 			Stats.Show(false);
@@ -749,11 +763,11 @@ let _menu = {
 	/**
 	 * Set Übersicht
 	 */
-	kits_Btn: ()=> {
+	kits_Btn: () => {
 
 		let btn = _menu.MakeButton('kits', i18n('Menu.Kits.Title'), i18n('Menu.Kits.Desc'));
 
-		let btn_sp = $('<span />').on('click', function(){
+		let btn_sp = $('<span />').on('click', function () {
 			Kits.init();
 		});
 
@@ -815,13 +829,13 @@ let _menu = {
 
 		return btn.append(btn_sp, $('<span id="hidden-blue-galaxy-count" class="hud-counter">0</span>'));
 	},
-	
+
 	/**
 	 * Moppelassistent
 	 * */
 	moppelHelper_Btn: () => {
 		// active?
-		if(!Settings.GetSetting('ShowPlayersMotivation')){
+		if (!Settings.GetSetting('ShowPlayersMotivation')) {
 			return;
 		}
 
@@ -832,7 +846,7 @@ let _menu = {
 		});
 
 		return btn.append(btn_sp);
-    },
+	},
 
 	/**
 	 * FP Collector box
@@ -864,19 +878,19 @@ let _menu = {
 
 	/**
 	 * Guildfight Overview
-	 * 	
+	 *
 	 * @returns {*|jQuery}
 	 * */
 	gildFight_Btn: () => {
 		let btn = _menu.MakeButton(
 			'gildFight',
-				i18n('Menu.Gildfight.Title'),
-				i18n('Menu.Gildfight.Warning') + i18n('Menu.Gildfight.Desc'),
-			 	true
-			);
+			i18n('Menu.Gildfight.Title'),
+			i18n('Menu.Gildfight.Warning') + i18n('Menu.Gildfight.Desc'),
+			true
+		);
 
-		let btn_sp = $('<span />').on('click', function (){
-			if(GuildFights.MapData) {
+		let btn_sp = $('<span />').on('click', function () {
+			if (GuildFights.MapData) {
 				GuildFights.ShowGuildBox();
 			}
 		});
@@ -931,7 +945,7 @@ let _menu = {
 				GexStat.BuildBox(false);
 			}
 		});
-		return btn.append(btn_sp, $(`<span id="gex-attempt-count" class="hud-counter">${GExAttempts.count||0}</span>`)).ready(GExAttempts.refreshGUI);
+		return btn.append(btn_sp, $(`<span id="gex-attempt-count" class="hud-counter">${GExAttempts.count || 0}</span>`)).ready(GExAttempts.refreshGUI);
 	},
 
 	/**
@@ -983,7 +997,7 @@ let _menu = {
 				betterMusic.CloseBox();
 			} else {
 				betterMusic.ShowDialog();
-			}		
+			}
 
 		});
 
