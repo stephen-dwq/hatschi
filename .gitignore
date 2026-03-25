@@ -8,4 +8,4 @@ desktop.ini
 Icon?
 /build
 /*.xpi
-/*.old.*
+**.old.*

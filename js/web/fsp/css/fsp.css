@@ -1,0 +1,99 @@
+#fspMenu {
+    top: calc(50vh + 165px);
+    left: calc(50vw - 180px);
+}
+
+#fspMenuBody {
+    width: 320px;
+    padding: 8px 0 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fsp-section {
+    width: 100%;
+    padding: 8px 14px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.fsp-section.dark-bg {
+    background: var(--dark-bg, rgba(0, 0, 0, 0.25));
+}
+
+.fsp-label {
+    font-size: 80%;
+    color: var(--bright-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: default;
+}
+
+.fsp-select {
+    width: 100%;
+    background: var(--input-bg, rgba(0, 0, 0, 0.4));
+    color: var(--text-color, #ccc);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    border-radius: 3px;
+    padding: 4px 6px;
+    font-size: 90%;
+    cursor: pointer;
+}
+
+.fsp-select:focus {
+    outline: none;
+    border-color: var(--bright-color);
+}
+
+.fsp-value {
+    color: var(--bright-color);
+    font-size: 95%;
+}
+
+.fsp-controls {
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+}
+
+.fsp-controls .btn-default {
+    min-width: 80px;
+}
+
+.fsp-stats {
+    flex-direction: row;
+    align-items: center;
+    font-size: 90%;
+}
+
+.fsp-toggle {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 90%;
+}
+
+.fsp-toggle .fsp-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 90%;
+    color: var(--text-color, #ccc);
+    cursor: pointer;
+}
+
+.fsp-status {
+    font-size: 80%;
+    color: var(--text-muted, #888);
+}
+
+#fspMenu #ignore_bg:checked ~ .fsp-status,
+.fsp-status.active {
+    color: var(--text-success);
+}

@@ -335,7 +335,12 @@ let _menu = {
 		);
 
 		let btn_sp = $('<span />').on('click', function () {
-			fsp.Show();
+			const existing = $('#fspMenu');
+			if (existing.length > 0) {
+				HTML.BringToFront(existing);
+			} else {
+				fsp.Show();
+			}
 		});
 
 		return btn.append(btn_sp);
