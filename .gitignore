@@ -9,3 +9,4 @@ Icon?
 /build
 /*.xpi
 **.old.*
+/data

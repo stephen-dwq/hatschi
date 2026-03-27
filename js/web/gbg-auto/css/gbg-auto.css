@@ -1,0 +1,80 @@
+/**
+ * GBG Auto CSS formatter for FoEProxy
+ * Stage 1: Signal tracking styles
+ * Used by gbg-auto.js
+ */
+
+#gbgAutoMenu {
+    top: calc(50vh + 165px);
+    left: calc(50vw - 200px);
+}
+
+#gbgAutoMenuBody {
+    width: 400px;
+    padding: 8px 0 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.gbg-auto-section {
+    width: 100%;
+    padding: 8px 14px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gbg-auto-section.dark-bg {
+    background: var(--dark-bg, rgba(0, 0, 0, 0.25));
+}
+
+.gbg-auto-label {
+    font-size: 80%;
+    color: var(--bright-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: default;
+}
+
+.gbg-auto-value {
+    color: var(--bright-color);
+    font-size: 95%;
+}
+
+.gbg-auto-province-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gbg-auto-province-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background: var(--input-bg, rgba(0, 0, 0, 0.4));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    border-radius: 3px;
+    font-size: 90%;
+}
+
+.gbg-auto-province-id {
+    color: var(--text-color, #ccc);
+    font-weight: bold;
+}
+
+.gbg-auto-signal {
+    color: var(--bright-color);
+    font-size: 85%;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.gbg-auto-empty {
+    color: var(--text-muted, #888);
+    text-align: center;
+    padding: 12px 0;
+    font-size: 90%;
+}
