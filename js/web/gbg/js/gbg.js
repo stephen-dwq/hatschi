@@ -68,15 +68,15 @@ let gbg = {
         body.push(`<div class="gbg-section dark-bg">
 		<label class="gbg-label">Rewards Earned</label>
 		<div class="gbg-reward-row">
-			<img src="${srcLinks.icons('gbg_silver_coin')}" alt="Silver Coin">
+			${srcLinks.icons("gbg_silver_coin")}
 			<span id="silver" class="gbg-value">${gbg.silverCoins}</span>
 		</div>
 		<div class="gbg-reward-row">
-			<img src="${srcLinks.icons('gbg_gold_coin')}" alt="Gold Coin">
+			${srcLinks.icons("gbg_gold_coin")}
 			<span id="gold" class="gbg-value">${gbg.goldCoins}</span>
 		</div>
 		<div class="gbg-reward-row">
-			<img src="${srcLinks.icons('gbg_platinum_coin')}" alt="Platinum Coin">
+			${srcLinks.icons("gbg_platinum_coin")}
 			<span id="plat" class="gbg-value">${gbg.platinumCoins}</span>
 		</div>
 		</div>`);
