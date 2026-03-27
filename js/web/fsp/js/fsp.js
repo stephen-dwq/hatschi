@@ -200,22 +200,22 @@ let fsp = {
 
     reqData: {
         goofy: () =>
-            `[{"__class__":"ServerRequest","requestData":["item",null],"requestClass":"NoticeIndicatorService","requestMethod":"remove","requestId":7}]`,
+            `[{"__class__":"ServerRequest","requestData":["item",null],"requestClass":"NoticeIndicatorService","requestMethod":"remove","requestId":67}]`,
 
         aid: (aidID, targID) =>
-            `[{"__class__":"ServerRequest","requestData":[{"__class__":"UseItemOnBuildingPayload","itemId":${aidID},"mapEntityId":${targID},"optionIndex":0}],"requestClass":"InventoryService","requestMethod":"useItem","requestId":7}]`,
+            `[{"__class__":"ServerRequest","requestData":[{"__class__":"UseItemOnBuildingPayload","itemId":${aidID},"mapEntityId":${targID},"optionIndex":0}],"requestClass":"InventoryService","requestMethod":"useItem","requestId":67}]`,
 
         finishSpecial: (fspID, targID) =>
-            `[{"__class__":"ServerRequest","requestData":[{"__class__":"UseItemOnBuildingPayload","itemId":${fspID},"mapEntityId":${targID},"optionIndex":0}],"requestClass":"InventoryService","requestMethod":"useItem","requestId":7}]`,
+            `[{"__class__":"ServerRequest","requestData":[{"__class__":"UseItemOnBuildingPayload","itemId":${fspID},"mapEntityId":${targID},"optionIndex":0}],"requestClass":"InventoryService","requestMethod":"useItem","requestId":67}]`,
 
         collect: (targID) =>
-            `[{"__class__":"ServerRequest","requestData":[[${targID}]],"requestClass":"CityProductionService","requestMethod":"pickupProduction","requestId":7}]`,
+            `[{"__class__":"ServerRequest","requestData":[[${targID}]],"requestClass":"CityProductionService","requestMethod":"pickupProduction","requestId":67}]`,
 
         enter: (bldID, plyrID) =>
-            `[{"__class__":"ServerRequest","requestData":[${bldID},${plyrID}],"requestClass":"GreatBuildingsService","requestMethod":"getConstruction","requestId":7}]`,
+            `[{"__class__":"ServerRequest","requestData":[${bldID},${plyrID}],"requestClass":"GreatBuildingsService","requestMethod":"getConstruction","requestId":67}]`,
 
         contribute: (bldID, plyrID, lvl, amt) =>
-            `[{"__class__":"ServerRequest","requestData":[${bldID},${plyrID},${lvl},${amt},false],"requestClass":"GreatBuildingsService","requestMethod":"contributeForgePoints","requestId":7}]`,
+            `[{"__class__":"ServerRequest","requestData":[${bldID},${plyrID},${lvl},${amt},false],"requestClass":"GreatBuildingsService","requestMethod":"contributeForgePoints","requestId":67}]`,
     },
 };
 

@@ -8,7 +8,7 @@ FoEproxy.addHandler('AnnouncementsService', 'fetchAllAnnouncements', (data, post
     HTML.CloseOpenBox('gbgMenu');
 });
 
-FoEproxy.addHandler('GuildBattlegroundStateService', 'getState', (data, postData) => {
+FoEproxy.addHandler('GuildBattlegroundService', 'getBattleground', (data, postData) => {
     // Don't create a new box while another one is still open
     if ($('#gbgMenu').length > 0) {
         return;
@@ -31,34 +31,55 @@ let gbg = {
             'minimize': false
         });
 
-        body.push(`<div>
+        body.push(`<div class="gbg-section gbg-controls">
 		<button class="btn" onclick="gbg.stop = false; gbg.lockDialog(); gbg.doEncounter(1);" id="oneHit">1 Hit</button>
 		<button class="btn" onclick="gbg.stop = false; gbg.lockDialog(); gbg.doEncounter(10);" id="tenHit">10 Hits</button>
-		<button class="btn" onclick="gbg.stop = false; gbg.lockDialog(); gbg.doEncounter(-1);" id="sectorKill">Kill Sector</button>
+		<button class="btn" onclick="gbg.stop = false; gbg.lockDialog(); gbg.doEncounter(-1);" id="sectorKill">Sector</button>
 		<button class="btn" onclick="gbg.stop = true;" id="stop" disabled>Stop</button>
 		</div>`);
-        body.push(`<p>------------</p>`);
-        body.push(`<div>
-		<input type="checkbox" style="margin: 0 auto" id="race" ${gbg.racing ? "checked" : ""}>Full Take Y/N</input>
-		<p id="raceTF">Full Take: ${gbg.racing}</p>
+        body.push(`<div class="gbg-section dark-bg gbg-toggle">
+		<label class="gbg-label">
+			<input type="checkbox" class="game-cursor" id="race" ${gbg.racing ? "checked" : ""}>
+			Full Take
+		</label>
+		<span id="raceTF" class="gbg-status">${gbg.racing ? 'Active' : 'Off'}</span>
 		</div>`);
-        body.push(`<div>
-		<input type="checkbox" style="margin: 0 auto" id="demolish">Holding @180 Y/N</input>
-		<p id="holdingTF">Holding: ${gbg.holding}</p>
+        body.push(`<div class="gbg-section dark-bg gbg-toggle">
+		<label class="gbg-label">
+			<input type="checkbox" class="game-cursor" id="demolish">
+			Holding @180
+		</label>
+		<span id="holdingTF" class="gbg-status">${gbg.holding ? 'Active' : 'Off'}</span>
 		</div>`);
-        body.push(`<p>------------</p>`);
-        body.push(`<div>
-		<input type="range" min="0.25" max="1" step="0.05" value="${gbg.atkspdmod}" class="slider" style="display: block; margin: 0 auto" id="atkspd">Attack Speed Modifier</input>
-		<p id="atkMult">Multiplier: ${gbg.atkspdmod}</p>
+        body.push(`<div class="gbg-section dark-bg gbg-slider-container">
+		<label class="gbg-label">Attack Speed</label>
+		<input type="range" min="0.25" max="1" step="0.05" value="${gbg.atkspdmod}" id="atkspd">
+		<span id="atkMult" class="gbg-value">Multiplier: ${gbg.atkspdmod}</span>
 		</div>`);
-        body.push(`<p>------------</p>`);
-        body.push(`<p id="stats">Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
-        body.push(`<p id="attr">Attrition Gained: ${gbg.attritionGained}</p>`);
-        body.push(`<p id="dead">Dead Troops: ${gbg.dead}</p>`);
-        body.push(`<p>------------</p>`);
-        body.push(`<p>Rewards Earned:</p>`);
-        body.push(`<p id="dias">Diamonds: ${gbg.diamonds}</p>`);
-        body.push(`<p id="fps">Forge Points: ${gbg.fp}</p>`);
+        body.push(`<div class="gbg-section dark-bg gbg-stats">
+		<span>Target: <strong id="currTgt" class="gbg-value">${gbg.currentTarget}</strong></span>
+		<span>Won: <strong id="battleWon" class="gbg-value">${gbg.battleInSession}</strong></span>
+		<span>Lost: <strong id="battleLst" class="gbg-value">${gbg.losses}</strong></span>
+		</div>`);
+        body.push(`<div class="gbg-section dark-bg gbg-stats">
+		<span>Attrition: <strong id="attr" class="gbg-value">${gbg.attritionGained}</strong></span>
+		<span>Dead: <strong id="dead" class="gbg-value">${gbg.dead}</strong></span>
+		</div>`);
+        body.push(`<div class="gbg-section dark-bg">
+		<label class="gbg-label">Rewards Earned</label>
+		<div class="gbg-reward-row">
+			<img src="${srcLinks.icons('gbg_silver_coin')}" alt="Silver Coin">
+			<span id="silver" class="gbg-value">${gbg.silverCoins}</span>
+		</div>
+		<div class="gbg-reward-row">
+			<img src="${srcLinks.icons('gbg_gold_coin')}" alt="Gold Coin">
+			<span id="gold" class="gbg-value">${gbg.goldCoins}</span>
+		</div>
+		<div class="gbg-reward-row">
+			<img src="${srcLinks.icons('gbg_platinum_coin')}" alt="Platinum Coin">
+			<span id="plat" class="gbg-value">${gbg.platinumCoins}</span>
+		</div>
+		</div>`);
 
         $('#gbgMenuBody').html(body);
         document.querySelector("#atkspd").oninput = function () {
@@ -92,14 +113,17 @@ let gbg = {
     },
 
     refreshDialog: () => {
-        document.getElementById("raceTF").innerHTML = `Full Take: ${gbg.racing}`;
-        document.getElementById("holdingTF").innerHTML = `Holding: ${gbg.holding}`;
+        document.getElementById("raceTF").innerHTML = gbg.racing ? 'Active' : 'Off';
+        document.getElementById("holdingTF").innerHTML = gbg.holding ? 'Active' : 'Off';
         document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
-        document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
-        document.getElementById("attr").innerHTML = `Attrition Gained: ${gbg.attritionGained}`;
-        document.getElementById("dead").innerHTML = `Dead Troops: ${gbg.dead}`;
-        document.getElementById("dias").innerHTML = `Diamonds: ${gbg.diamonds}`;
-        document.getElementById("fps").innerHTML = `Forge Points: ${gbg.fp}`;
+        document.getElementById("currTgt").innerHTML = `${gbg.currentTarget}`;
+        document.getElementById("battleWon").innerHTML = `${gbg.battleInSession}`;
+        document.getElementById("battleLst").innerHTML = `${gbg.losses}`;
+        document.getElementById("attr").innerHTML = `${gbg.attritionGained}`;
+        document.getElementById("dead").innerHTML = `${gbg.dead}`;
+        document.getElementById("silver").innerHTML = `${gbg.silverCoins}`;
+        document.getElementById("gold").innerHTML = `${gbg.goldCoins}`;
+        document.getElementById("plat").innerHTML = `${gbg.platinumCoins}`;
     },
 
     racing: false,
@@ -122,6 +146,9 @@ let gbg = {
     waveCount: null,
     attritionGained: 0,
     attritionStart: null,
+    goldCoins: 0,
+    platinumCoins: 0,
+    silverCoins: 0,
 
     doEncounter: (n) => {
         gbg.atkStep1(n);
@@ -246,7 +273,7 @@ let gbg = {
             return JSON.stringify([{ "__class__": "ServerRequest", "requestData": [{ "__class__": "BattlegroundBattleType", "attackerPlayerId": 0, "defenderPlayerId": 0, "type": "battleground", "currentWaveId": 0, "totalWaves": 0, "provinceId": id, "battlesWon": 0 }], "requestClass": "BattlefieldService", "requestMethod": "getArmyPreview", "requestId": 67 }]);
         },
         step2Req: (id) => {
-            return JSON.stringify([{ "__class__": "ServerRequest", "requestData": [{ "__class__": "BattlegroundArmyContext", "battleType": "battleground", "provinceId": id }], "requestClass": "ArmyUnitManagementService", "requestMethod": "getArmyInfo", "requestId": 7 }]);
+            return JSON.stringify([{ "__class__": "ServerRequest", "requestData": [{ "__class__": "BattlegroundArmyContext", "battleType": "battleground", "provinceId": id }], "requestClass": "ArmyUnitManagementService", "requestMethod": "getArmyInfo", "requestId": 67 }]);
         },
         step3Req: (id) => {
             return JSON.stringify([{ "__class__": "ServerRequest", "requestData": [{ "__class__": "BattlegroundBattleType", "attackerPlayerId": 0, "defenderPlayerId": 0, "type": "battleground", "currentWaveId": 0, "totalWaves": 0, "provinceId": id, "battlesWon": 0 }, true], "requestClass": "BattlefieldService", "requestMethod": "startByBattleType", "requestId": 67 }]);
@@ -347,15 +374,18 @@ FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) 
 });
 
 /*
-Increments diamond and FP rewards
+Increments GBG coin rewards
  */
 FoEproxy.addHandler('RewardService', 'collectReward', (data, postData) => {
     if ($('#gbgMenu').length <= 0) return;
-    if (data.responseData[0][0].subType == "strategy_points") {
-        gbg.fp += 10;
+    if (data.responseData[0][0].subType == "gbg_gold_coin") {
+        gbg.goldCoins += data.responseData[0][0].amount || 1;
     }
-    if (data.responseData[0][0].subType == "premium") {
-        gbg.diamonds += 45;
+    if (data.responseData[0][0].subType == "gbg_platinum_coin") {
+        gbg.platinumCoins += data.responseData[0][0].amount || 1;
+    }
+    if (data.responseData[0][0].subType == "gbg_silver_coin") {
+        gbg.silverCoins += data.responseData[0][0].amount || 1;
     }
 });
 
