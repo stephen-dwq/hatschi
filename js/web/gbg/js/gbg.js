@@ -369,7 +369,7 @@ Checks if previous battle was won
 FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) => {
     if ($('#gbgMenu').length <= 0) return;
     gbg.battlesWon = data.responseData.battleType.battlesWon;
-    gbg.won = (data.responseData.state.winnerBit == 1);
+    gbg.won = (data.responseData.state.winnerBit === 1);
     gbg.era = data.responseData.battleType.era;
 });
 

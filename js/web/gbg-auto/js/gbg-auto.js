@@ -19,13 +19,13 @@ let gbgAuto = {
 
     /**
      * Initialize signals and locks from getBattleground response
-     * Signals are stored in participants[].signals[]
+     * Signals are stored in battlegroundParticipants[].signals[]
      * Locks are stored in map.provinces[].lockedUntil
      */
     initializeFromResponse: (responseData) => {
-        // Initialize signals from participants
-        if (responseData.participants && Array.isArray(responseData.participants)) {
-            gbgAuto.initializeSignals(responseData.participants);
+        // Initialize signals from battlegroundParticipants
+        if (responseData.battlegroundParticipants && Array.isArray(responseData.battlegroundParticipants)) {
+            gbgAuto.initializeSignals(responseData.battlegroundParticipants);
         }
 
         // Initialize province locks from map
@@ -35,8 +35,8 @@ let gbgAuto = {
     },
 
     /**
-     * Initialize signal tracking from participants array
-     * Signals are stored in participants[].signals[]
+     * Initialize signal tracking from battlegroundParticipants array
+     * Signals are stored in battlegroundParticipants[].signals[]
      */
     initializeSignals: (participants) => {
         gbgAuto.signals = {};
@@ -84,7 +84,6 @@ let gbgAuto = {
     setSignal: (provinceId, signal) => {
         if (signal !== undefined) {
             gbgAuto.signals[provinceId] = signal;
-            console.log(`[GBG-Auto] Signal set: Province ${provinceId} -> ${signal}`);
         }
     },
 
@@ -94,7 +93,6 @@ let gbgAuto = {
     clearSignal: (provinceId) => {
         if (gbgAuto.signals[provinceId] !== undefined) {
             delete gbgAuto.signals[provinceId];
-            console.log(`[GBG-Auto] Signal cleared: Province ${provinceId}`);
         }
     },
 
@@ -118,14 +116,10 @@ let gbgAuto = {
             // Schedule automatic unlock at the lock expiration time
             gbgAuto.unlockTimeouts[provinceId] = setTimeout(() => {
                 gbgAuto.clearProvinceLock(provinceId);
-                console.log(`[GBG-Auto] Province ${provinceId} automatically unlocked (timer expired)`);
             }, timeUntilUnlock);
-
-            console.log(`[GBG-Auto] Province ${provinceId} locked until ${new Date(lockedUntil * 1000).toISOString()} (unlock in ${timeUntilUnlock / 1000}s)`);
         } else {
             // Lock time is in the past, unlock immediately
             gbgAuto.clearProvinceLock(provinceId);
-            console.log(`[GBG-Auto] Province ${provinceId} lock time is in the past, unlocking immediately`);
         }
     },
 
@@ -141,8 +135,6 @@ let gbgAuto = {
                 clearTimeout(gbgAuto.unlockTimeouts[provinceId]);
                 delete gbgAuto.unlockTimeouts[provinceId];
             }
-
-            console.log(`[GBG-Auto] Province ${provinceId} is now unlocked`);
         }
     },
 
