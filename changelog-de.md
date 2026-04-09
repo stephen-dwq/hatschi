@@ -1,5 +1,24 @@
 ## Changelog - Extension
+ 
 
+##### 4.2.1.1
+
+**Bugfix**
+- Beide Rechner waren kaputt nach dem Spiel-Update auf Version 1.332
+
+
+##### 4.2.1.0
+
+**Update**
+- Discord Webhooks: Modul wurde komplett verändert und kann nun jederzeit Nachrichten verschicken.
+- Statistik: Güter des nächten Zeitalters in die Schnellauswahl hinzugefügt.
+- Wiederholtes Bauen: entfernt für Umbaumodus, da nun spieleigene Funktion vorhanden.
+
+**Bugfix**
+- Merger-Minispiel: funktioniert nun wie ursprünglich geplant
+
+
+---
 
 ##### 4.2.0.0
 

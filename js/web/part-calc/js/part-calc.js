@@ -41,11 +41,11 @@ FoEproxy.addHandler("GreatBuildingsService","getConstruction", (data,postData) =
 
 FoEproxy.addHandler("all","all", (data,postData) => {
 	if (!Parts.allowCopyPlaceSetting) return;
-	if (["GreatBuildingsService.getConstruction"].includes(data.requestClass + "." + data.requestMethod)) {
+	if (["GreatBuildingsService.unlockLevel","GreatBuildingsService.getConstruction"].includes(data.requestClass + "." + data.requestMethod)) {
 		Parts.allowCopyPlace = true;
 		Parts.allowCopyPlaceSetting = false;
 		setTimeout(()=>{Parts.allowCopyPlaceSetting = true}, 2000)
-	} else if (	[
+	} else if (	![
 		"BlueprintService.getGreatBuildingInventoryForGreatBuilding",
 		"BlueprintService.unlockLevel",
 		"CityMapService.reset",
@@ -64,7 +64,6 @@ FoEproxy.addHandler("all","all", (data,postData) => {
 		"ResourceService.getPlayerResourceBag",
 		"TimeService.updateTime"
 		].includes(data.requestClass + "." + data.requestMethod)) {
-	} else {
 		Parts.allowCopyPlace = false;
 	}
 });
@@ -953,7 +952,7 @@ let Parts = {
 				rest = Total;
 			}
 			else {
-				rest = Parts.CityMapEntity['state']['invested_forge_points'] === undefined ? Parts.CityMapEntity['state']['forge_points_for_level_up'] : Parts.CityMapEntity['state']['forge_points_for_level_up'] - Parts.CityMapEntity['state']['invested_forge_points'];
+				rest = Parts.CityMapEntity['state']['forge_points_for_level_up'] - Parts.Rankings.reduce((acc,entry)=>acc+(entry?.forge_points|0),0);
 			}
 			if (!minView) {
 				h.push('<div class="text-center d-flex" style="padding:3px 0;">');

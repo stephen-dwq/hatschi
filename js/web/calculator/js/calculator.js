@@ -21,6 +21,10 @@ FoEproxy.addHandler("GreatBuildingsService","getConstruction", (data,postData) =
 	if ($('#costCalculator').length === 0 && localStorage.getItem('CalcAutoOpen') == 'true' && postData[0].requestData[1] !== ExtPlayerID) {
 		Calculator.Show();
 	}
+	if (localStorage.getItem('OwnPartClose') == 'true' && localStorage.getItem('CalcAutoOpen') == 'true' && postData[0].requestData[1] !== ExtPlayerID)
+		if ($('#OwnPartBox').length > 0) {
+			HTML.CloseOpenBox('OwnPartBox');
+		}
 });
 
 let Calculator = {
@@ -33,6 +37,7 @@ let Calculator = {
 	LastRecurringQuests: undefined,
 	ForderBonusPerConversation: true,
 	AutoOpen: false,
+	OwnPartClose: false,
 	ShowBP: true,
 	ShowMedals: true,
 	DefaultButtons: [
@@ -231,7 +236,7 @@ let Calculator = {
 		h.push('<table id="costTableFordern" style="width:100%" class="foe-table"></table>');
 
         // how much is missing to level up?
-		let rest = (Calculator.CityMapEntity['state']['invested_forge_points'] === undefined ? Calculator.CityMapEntity['state']['forge_points_for_level_up'] : Calculator.CityMapEntity['state']['forge_points_for_level_up'] - Calculator.CityMapEntity['state']['invested_forge_points']);
+		let rest = Calculator.CityMapEntity['state']['forge_points_for_level_up'] - Calculator.Rankings.reduce((acc,entry)=>acc+(entry?.forge_points|0),0);
 
 		h.push('<div class="text-center dark-bg" style="padding-top:5px;padding-bottom:5px;"><em>' + i18n('Boxes.Calculator.Up2LevelUp') + ': <span id="up-to-level-up" style="color:#FFB539">' + HTML.Format(rest) + '</span> ' + i18n('Boxes.Calculator.FP') + '</em></div>');
 
@@ -384,7 +389,7 @@ let Calculator = {
 			if (Calculator.Rankings[i]['forge_points'] !== undefined)
 				Einzahlungen[Rank] = Calculator.Rankings[i]['forge_points'];
 
-			CurrentFP = (Calculator.CityMapEntity['state']['invested_forge_points'] !== undefined ? Calculator.CityMapEntity['state']['invested_forge_points'] : 0) - EigenBetrag;
+			CurrentFP = Calculator.Rankings.reduce((acc,entry)=>acc+(entry?.forge_points|0),0) - EigenBetrag;
 			TotalFP = Calculator.CityMapEntity['state']['forge_points_for_level_up'];
 			RestFP = TotalFP - CurrentFP;
 
@@ -741,7 +746,8 @@ let Calculator = {
 		c.push(nV);
 
 		c.push('<label for="forderbonusperconversation"><input id="forderbonusperconversation" class="forderbonusperconversation game-cursor" ' + (Calculator.ForderBonusPerConversation ? 'checked' : '') + ' type="checkbox"> ' + i18n('Boxes.Calculator.ForderBonusPerConversation')+'</label><br/>');
-		c.push('<label for="CalcAutoOpen"><input id="CalcAutoOpen" class="CalcAutoOpen game-cursor" ' + (Calculator.AutoOpen ? 'checked' : '') + ' type="checkbox"> ' + i18n('Settings.ShowOwnPartAutoOpen.Desc'));
+		c.push('<label for="CalcAutoOpen"><input id="CalcAutoOpen" class="CalcAutoOpen game-cursor" ' + (Calculator.AutoOpen ? 'checked' : '') + ' type="checkbox"> ' + i18n('Settings.ShowOwnPartAutoOpen.Desc')+'</label><br/>');
+		c.push('<label for="OwnPartClose"><input id="OwnPartClose" class="OwnPartClose game-cursor" ' + (Calculator.OwnPartClose ? 'checked' : '') + ' type="checkbox"> ' + i18n('Boxes.Calculator.OwnPartClose') + '</label>');
 
 		// save button
 		c.push(`<p class="text-center"><button id="save-calculator-settings" class="btn btn-green" onclick="Calculator.SettingsSaveValues()">${i18n('Boxes.Calculator.Settings.Save')}</button></p>`);
@@ -784,6 +790,8 @@ let Calculator = {
 			localStorage.setItem('CalculatorForderBonusPerConversation', Calculator.ForderBonusPerConversation);
 			Calculator.AutoOpen = $('.CalcAutoOpen').prop('checked');
 			localStorage.setItem('CalcAutoOpen', Calculator.AutoOpen);
+			Calculator.OwnPartClose = $('.OwnPartClose').prop('checked');
+			localStorage.setItem('OwnPartClose', Calculator.OwnPartClose)
 		});
 
 		// save new buttons

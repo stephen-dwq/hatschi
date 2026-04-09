@@ -1,5 +1,23 @@
 ## Changelog - Extension
+ 
 
+##### 4.2.1.1
+
+**Bugfix**
+- Calculatores were broken after game update to version 1.332
+
+
+##### 4.2.1.0
+
+**Update**
+- Discord Webhooks: Reworked the module - send custom messages instantly via webhook.
+- Stats: Added a quick select for next era goods.
+- repeated building: removed for the reconstruction mode, as there now is an ingame implementation.
+
+**Bugfix**
+- Merger Minigame: Works now as intended.
+
+---
 
 ##### 4.2.0.0
 
