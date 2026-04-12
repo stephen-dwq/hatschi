@@ -216,6 +216,15 @@ let GuildFights = {
 					ProvinceMap.RefreshSector(data['responseData'][0]);
 				}
 			});
+
+			FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', data => {
+				for (let p in data.responseData) {
+					if ($('#ProvinceMap').length > 0) {
+						ProvinceMap.RefreshSector(p);
+					}
+				}
+			});
+
 			GuildFights.InjectionLoaded = true;
 		}
 	},
