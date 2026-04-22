@@ -13,7 +13,7 @@
 if (typeof globalThis.FoEproxy == 'undefined') {
     globalThis.FoEproxy = (function () {
         globalThis.globalID = 1;
-        const HASH_KEY = "OcPhxRjPq2lobUEABhWq70MabEBMX0/U+MuELG9hyNG21T/wFH2rVY/shCfFWvn9LTDkDIEiZIRtLxr0aowXRg=="; // from ForgeHX-*.js
+        const HASH_KEY = "kGieqOaaLpOTbLmppu/YqVtD7SCH/5EJlrMW0MG03/Rx0Ln35/ANbXCZeYwtWsyFdM6oRKpaDdEjktbeIwRKMQ=="; // from ForgeHX-*.js
         let firstSig = null; // first md5 hash
         let jsonHash = null; // ?h= param
         let baseURL = null; // detected base URL in form "https://xx.forgeofempires.com/game/json"
@@ -192,10 +192,9 @@ if (typeof globalThis.FoEproxy == 'undefined') {
                 for (let post of posts) {
                     if (!post || !post.requestClass || !post.requestMethod || !post.requestData) return;
 
-                    if (post.requestId) {
-                        globalThis.globalID = (globalThis.globalID > post.requestId) ? globalThis.globalID : post.requestId;
+                    if (post.requestId)
                         post.requestId = globalThis.globalID++;
-                    }
+
 
                     FoEproxy._proxyRequestAction(post.requestClass, post.requestMethod, post);
                 }
