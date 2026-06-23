@@ -47,7 +47,7 @@ let gbg = {
         body.push(`<div class="gbg-section dark-bg gbg-toggle">
 		<label class="gbg-label">
 			<input type="checkbox" class="game-cursor" id="demolish">
-			Holding @180
+			Holding @90
 		</label>
 		<span id="holdingTF" class="gbg-status">${gbg.holding ? 'Active' : 'Off'}</span>
 		</div>`);
@@ -97,6 +97,7 @@ let gbg = {
     },
 
     lockDialog: () => {
+        if ($('#gbgMenu').length === 0) return;
         document.getElementById("oneHit").disabled = true;
         document.getElementById("tenHit").disabled = true;
         document.getElementById("sectorKill").disabled = true;
@@ -105,6 +106,7 @@ let gbg = {
     },
 
     unlockDialog: () => {
+        if ($('#gbgMenu').length === 0) return;
         document.getElementById("oneHit").disabled = false;
         document.getElementById("tenHit").disabled = false;
         document.getElementById("sectorKill").disabled = false;
@@ -113,6 +115,7 @@ let gbg = {
     },
 
     refreshDialog: () => {
+        if ($('#gbgMenu').length === 0) return;
         document.getElementById("raceTF").innerHTML = gbg.racing ? 'Active' : 'Off';
         document.getElementById("holdingTF").innerHTML = gbg.holding ? 'Active' : 'Off';
         document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
@@ -150,6 +153,29 @@ let gbg = {
     platinumCoins: 0,
     silverCoins: 0,
 
+    isEngaged: () => {
+        return $('#gbgMenu').length > 0
+            || (typeof gbgAuto !== 'undefined' && gbgAuto.attacking);
+    },
+
+    finishJob: () => {
+        gbg.unlockDialog();
+        if (typeof gbgAuto !== 'undefined' && gbgAuto.attacking) {
+            gbgAuto.onJobFinished();
+            return;
+        }
+        alert("Job Finished");
+    },
+
+    abortJob: (message) => {
+        gbg.unlockDialog();
+        if (typeof gbgAuto !== 'undefined' && gbgAuto.attacking) {
+            gbgAuto.onAttackAborted(message);
+            return;
+        }
+        alert(message);
+    },
+
     doEncounter: (n) => {
         gbg.atkStep1(n);
     },
@@ -162,22 +188,19 @@ let gbg = {
         }
 
         if (0 == n) {
-            gbg.unlockDialog();
-            alert("Job Finished");
+            gbg.finishJob();
             return;
         }
 
         if (gbg.losses == 3) {
-            gbg.unlockDialog();
-            alert("Too many losses");
             gbg.losses = 0;
+            gbg.abortJob("Too many losses");
             return;
         }
 
         if (null == gbg.currentTarget) {
             gbg.stop = false;
-            gbg.unlockDialog();
-            alert("Retarget");
+            gbg.abortJob("Retarget");
             return;
         }
 
@@ -194,14 +217,12 @@ let gbg = {
 
     setPreset: (n) => {
         if (gbg.template == null || gbg.templateId == null) {
-            gbg.unlockDialog();
-            alert("NO TEMPLATE");
+            gbg.abortJob("NO TEMPLATE");
             throw '';
         }
 
         if (gbg.units.includes(null)) {
-            gbg.unlockDialog();
-            alert("NO UNITS");
+            gbg.abortJob("NO UNITS");
             throw '';
         }
 
@@ -212,8 +233,7 @@ let gbg = {
 
     armyRefill: (n) => {
         if (gbg.units.includes(null)) {
-            gbg.unlockDialog();
-            alert("NO UNITS");
+            gbg.abortJob("NO UNITS");
             throw '';
         }
 
@@ -224,8 +244,7 @@ let gbg = {
 
     atkStep3: (n) => {
         if (gbg.waveCount == null) {
-            gbg.unlockDialog();
-            alert("WAVECOUNT NULL");
+            gbg.abortJob("WAVECOUNT NULL");
             throw '';
         }
 
@@ -246,14 +265,12 @@ let gbg = {
 
     atkStep4: (n) => {
         if (gbg.battlesWon == null) {
-            gbg.unlockDialog();
-            alert("BATTLESWON NULL");
+            gbg.abortJob("BATTLESWON NULL");
             throw '';
         }
 
         if (gbg.era == null) {
-            gbg.unlockDialog();
-            alert("ERA NULL");
+            gbg.abortJob("ERA NULL");
             throw '';
         }
 
@@ -301,7 +318,7 @@ FoEproxy.addHandler('GuildBattlegroundService', 'getBattleground', (data, postDa
 Gets ID of province being attacked, and the number of waves in battle.
  */
 FoEproxy.addHandler('BattlefieldService', 'getArmyPreview', (data, postData) => {
-    if ($('#gbgMenu').length <= 0) return;
+    if (!gbg.isEngaged()) return;
     gbg.currentTarget = postData[0].requestData[0].provinceId;
     gbg.waveCount = data.responseData.length;
 });
@@ -312,7 +329,7 @@ Continues using units with 10 HP, replaces rest with full HP
 Mimics "Refresh Units" button.
  */
 FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData) => {
-    if ($('#gbgMenu').length <= 0) return;
+    if (!gbg.isEngaged()) return;
     gbg.templateId = data.responseData.templates[0].id;
     gbg.template = data.responseData.templates[0].unitTypeIds;
 
@@ -327,7 +344,7 @@ FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData)
         if (unit.__class__ == "ArmyUnitStack" && template_copy.includes(unit.unitTypeId)) {
             unitIdsDict[unit.unitTypeId] = unit.unitIds;
             if (unit.unitIds.length < 16) {
-                alert("LOW UNITS");
+                gbg.abortJob("LOW UNITS");
                 throw '';
             }
         }
@@ -367,7 +384,7 @@ FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData)
 Checks if previous battle was won
  */
 FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) => {
-    if ($('#gbgMenu').length <= 0) return;
+    if (!gbg.isEngaged()) return;
     gbg.battlesWon = data.responseData.battleType.battlesWon;
     gbg.won = (data.responseData.state.winnerBit === 1);
     gbg.era = data.responseData.battleType.era;
@@ -377,7 +394,7 @@ FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) 
 Increments GBG coin rewards
  */
 FoEproxy.addHandler('RewardService', 'collectReward', (data, postData) => {
-    if ($('#gbgMenu').length <= 0) return;
+    if (!gbg.isEngaged()) return;
     if (data.responseData[0][0].subType == "gbg_gold_coin") {
         gbg.goldCoins += data.responseData[0][0].amount || 1;
     }
@@ -404,19 +421,24 @@ FoEproxy.addWsHandler('GuildBattlegroundSignalsService', 'updateSignal', (data, 
 Stop attacking when approaching demolish danger.
  */
 FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postData) => {
-    if ((data.responseData[0].id == gbg.currentTarget || (gbg.currentTarget == 0 && data.responseData[0].id == undefined))) {
-        if (data.responseData[0].lockedUntil != undefined) {
+    if (!data.responseData) return;
+
+    for (let province of data.responseData) {
+        if (!(province.id == gbg.currentTarget || (gbg.currentTarget == 0 && province.id == undefined)))
+            continue;
+
+        if (province.lockedUntil != undefined) {
             gbg.stop = true;
             return;
         }
 
-        attackers = data.responseData[0].conquestProgress;
+        attackers = province.conquestProgress || [];
         for (let attacker of attackers) {
             if (gbg.currentParticipantId == attacker.participantId) {
                 if (!gbg.holding && attacker.maxProgress - attacker.progress <= (25 * !gbg.racing)) {
                     gbg.stop = true;
                     return;
-                } else if (gbg.holding && !(attacker.progress <= 180 || gbg.racing)) {
+                } else if (gbg.holding && !(attacker.progress <= 90 || gbg.racing)) {
                     gbg.stop = true;
                     return;
                 }

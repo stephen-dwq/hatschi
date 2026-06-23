@@ -191,6 +191,31 @@ let GuildFights = {
 		GuildFights.db.open();
 	},
 
+	/**
+	 * Merge a province patch into MapData and refresh open UI panels.
+	 * @param {Object} provinceData
+	 */
+	applyProvinceUpdate: (provinceData) => {
+		if (!provinceData || !GuildFights.MapData?.map?.provinces) return;
+
+		const Pid = provinceData.id || 0;
+		const mapProvince = GuildFights.MapData.map.provinces[Pid];
+		if (!mapProvince) return;
+
+		for (let x in provinceData) {
+			if (!provinceData.hasOwnProperty(x) || x === "id") continue;
+			mapProvince[x] = provinceData[x];
+		}
+
+		if ($('#LiveGildFighting').length > 0) {
+			GuildFights.RefreshTable(provinceData);
+		}
+
+		if ($('#ProvinceMap').length > 0) {
+			ProvinceMap.RefreshSector(provinceData);
+		}
+	},
+
 	init: () => {
 		// moment.js global set
 		//moment.locale(MainParser.Language);
@@ -199,29 +224,15 @@ let GuildFights = {
 
 		if (GuildFights.InjectionLoaded === false) {
 			FoEproxy.addWsHandler('GuildBattlegroundService', 'all', data => {
-				if (!data['responseData']?.[0]) return
-				let Pid = data.responseData[0].id || 0;
-				for (let x in data.responseData[0]) {
-					if (!data.responseData[0].hasOwnProperty(x) || x === "id") continue;
-					GuildFights.MapData.map.provinces[Pid][x] = data.responseData[0][x];
-				}
-
-				// Update Tables
-				if ($('#LiveGildFighting').length > 0) {
-					GuildFights.RefreshTable(data['responseData'][0]);
-				}
-
-				// Update Minimap
-				if ($('#ProvinceMap').length > 0) {
-					ProvinceMap.RefreshSector(data['responseData'][0]);
-				}
+				if (data.requestMethod === 'getProvinces') return;
+				if (!data['responseData']?.[0]) return;
+				GuildFights.applyProvinceUpdate(data.responseData[0]);
 			});
 
 			FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', data => {
-				for (let p in data.responseData) {
-					if ($('#ProvinceMap').length > 0) {
-						ProvinceMap.RefreshSector(p);
-					}
+				if (!data.responseData) return;
+				for (let province of data.responseData) {
+					GuildFights.applyProvinceUpdate(province);
 				}
 			});
 
@@ -2182,10 +2193,10 @@ let ProvinceMap = {
 				if (prov.totalBuildingSlots)
 					data.totalBuildingSlots = prov.totalBuildingSlots;
 
-				if (prov.conquestProgress.length > 0)
+				if (prov.conquestProgress?.length > 0)
 					data.conquestProgress = prov.conquestProgress;
 
-				if (prov.gainAttritionChance)
+				if (prov.gainAttritionChance !== undefined)
 					data.gainAttritionChance = prov.gainAttritionChance;
 
 				// round map
@@ -2266,25 +2277,35 @@ let ProvinceMap = {
 	/**
 	 * @param socketData
 	 */
-	RefreshSector: (socketData = []) => {
+	RefreshSector: (socketData = {}) => {
 		let updatedProvince = ProvinceMap.Provinces.find(p => p.id === 0); // first sector does not have an ID, make it the default one
 
 		if (socketData['id'] !== undefined)
 			updatedProvince = ProvinceMap.Provinces.find(p => p.id === socketData['id']);
 
-		if (socketData.conquestProgress)
+		if (!updatedProvince) return;
+
+		if ('conquestProgress' in socketData)
 			updatedProvince.conquestProgress = socketData.conquestProgress;
 
-		if (socketData.lockedUntil)
+		if ('lockedUntil' in socketData)
 			updatedProvince.lockedUntil = socketData.lockedUntil;
+		else
+			delete updatedProvince.lockedUntil;
 
-		if (socketData.ownerId !== updatedProvince.owner.id) {
+		if ('gainAttritionChance' in socketData)
+			updatedProvince.gainAttritionChance = socketData.gainAttritionChance;
+		else
+			delete updatedProvince.gainAttritionChance;
+
+		if ('isAttackBattleType' in socketData)
+			updatedProvince.battleType = socketData.isAttackBattleType ? 'red' : 'blue';
+
+		if (socketData.ownerId !== undefined && socketData.ownerId !== updatedProvince.owner.id) {
 			updatedProvince.owner.id = socketData.ownerId;
 			updatedProvince.owner.colors = ProvinceMap.getSectorColors(socketData.ownerId);
+			ProvinceMap.Provinces.forEach(p => { delete p.neighbor; });
 		}
-
-		if (socketData.gainAttritionChance !== undefined)
-			updatedProvince.gainAttritionChance = socketData.gainAttritionChance;
 
 		updatedProvince.updateMapSector();
 	},
@@ -2369,24 +2390,15 @@ let ProvinceMap = {
 	},
 
 	/**
-	 * Get provinces that should be targeted for conquest
-	 * Criteria: attackable + gainAttritionChance === 20 + signal === 'focus'
+	 * Get provinces that should be targeted for conquest.
+	 * Delegates to gbgAuto fire-control when available.
 	 */
 	getTargetProvinces: () => {
-		const targets = [];
-		const attackable = ProvinceMap.getAttackableProvinces();
-
-		for (let province of attackable) {
-			// Check attrition chance
-			if (province.gainAttritionChance !== 20) continue;
-
-			// Check signal
-			if (province.signal !== 'focus') continue;
-
-			targets.push(province);
+		if (typeof gbgAuto !== 'undefined' && gbgAuto.getTargetProvinces) {
+			return gbgAuto.getTargetProvinces();
 		}
 
-		return targets;
+		return [];
 	},
 
 	ProvinceData: () => {
