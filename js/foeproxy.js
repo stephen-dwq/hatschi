@@ -13,7 +13,7 @@
 if (typeof globalThis.FoEproxy == 'undefined') {
     globalThis.FoEproxy = (function () {
         globalThis.globalID = 1;
-        const HASH_KEY = "kGieqOaaLpOTbLmppu/YqVtD7SCH/5EJlrMW0MG03/Rx0Ln35/ANbXCZeYwtWsyFdM6oRKpaDdEjktbeIwRKMQ=="; // from ForgeHX-*.js
+        const HASH_KEY = "2l21cD17JOROageaxCKsDERppakpIrQtfiQQZfTfyBm7FJ73xJ84Ltiv3vbRkq+sEw3rtqSMd08TiW3LtxLCkg=="; // from ForgeHX-*.js
         let firstSig = null; // first md5 hash
         let jsonHash = null; // ?h= param
         let baseURL = null; // detected base URL in form "https://xx.forgeofempires.com/game/json"
