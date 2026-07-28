@@ -1,0 +1,94 @@
+#collectAllMenu {
+    top: calc(50vh + 165px);
+    left: calc(50vw + 180px);
+}
+
+#collectAllMenuBody {
+    width: 320px;
+    padding: 8px 0 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.collect-all-section {
+    width: 100%;
+    padding: 8px 14px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.collect-all-section.dark-bg {
+    background: var(--dark-bg, rgba(0, 0, 0, 0.25));
+}
+
+.collect-all-label {
+    font-size: 80%;
+    color: var(--bright-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: default;
+}
+
+.collect-all-select {
+    width: 100%;
+    background: var(--input-bg, rgba(0, 0, 0, 0.4));
+    color: var(--text-color, #ccc);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    border-radius: 3px;
+    padding: 4px 6px;
+    font-size: 90%;
+    cursor: pointer;
+}
+
+.collect-all-select:focus {
+    outline: none;
+    border-color: var(--bright-color);
+}
+
+.collect-all-value {
+    color: var(--bright-color);
+    font-size: 95%;
+}
+
+.collect-all-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 90%;
+}
+
+.collect-all-bar {
+    width: 100%;
+    height: 8px;
+    margin-top: 2px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.collect-all-bar-fill {
+    width: 0;
+    height: 100%;
+    background: var(--bright-color);
+    transition: width 0.2s ease-out;
+}
+
+.collect-all-controls {
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+}
+
+.collect-all-controls .btn-default {
+    min-width: 90px;
+}
+
+.collect-all-error {
+    color: #e08080;
+}
