@@ -30,6 +30,7 @@ let _menu = {
 
 	Items: [
 		'fsp',
+		'collectAll',
 		'calculator',
 		'partCalc',
 		'outpost',
@@ -340,6 +341,28 @@ let _menu = {
 				HTML.BringToFront(existing);
 			} else {
 				fsp.Show();
+			}
+		});
+
+		return btn.append(btn_sp);
+	},
+
+	/**
+	 * Collect All
+	 */
+	collectAll_Btn: () => {
+		let btn = _menu.MakeButton(
+			'collectAll',
+			'Collect All',
+			'Collects every finished production one by one and deposits the forge points into a chosen great building.'
+		);
+
+		let btn_sp = $('<span />').on('click', function () {
+			const existing = $('#collectAllMenu');
+			if (existing.length > 0) {
+				HTML.BringToFront(existing);
+			} else {
+				CollectAll.Show();
 			}
 		});
 

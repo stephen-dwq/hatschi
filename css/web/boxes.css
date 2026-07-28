@@ -572,6 +572,10 @@ p {
 	background-image: url('../images/menu/fsp.png');
 }
 
+[id$=collectAll-Btn] span {
+	background-image: url('../images/menu/productions.png');
+}
+
 [id$=market-Btn] span {
 	background-image: url('../images/menu/market.png');
 }
