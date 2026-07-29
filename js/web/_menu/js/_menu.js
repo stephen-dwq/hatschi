@@ -68,6 +68,7 @@ let _menu = {
 		'unit',
 		'shopAssist',
 		'allies',
+		'heroic',
 	],
 
 	HiddenItems: [],
@@ -363,6 +364,28 @@ let _menu = {
 				HTML.BringToFront(existing);
 			} else {
 				CollectAll.Show();
+			}
+		});
+
+		return btn.append(btn_sp);
+	},
+
+	/**
+	 * Heroic Endeavor
+	 */
+	heroic_Btn: () => {
+		let btn = _menu.MakeButton(
+			'heroic',
+			'Heroic Endeavor',
+			'Works the Historical Allies questlines: the attacking and defending army tasks and the medal payments.'
+		);
+
+		let btn_sp = $('<span />').on('click', function () {
+			const existing = $('#heroicMenu');
+			if (existing.length > 0) {
+				HTML.BringToFront(existing);
+			} else {
+				heroic.ShowDialog();
 			}
 		});
 

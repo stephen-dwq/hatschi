@@ -66,7 +66,9 @@
 
 .fsp-stats {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 12px;
     font-size: 90%;
 }
 
@@ -96,4 +98,8 @@
 #fspMenu #ignore_bg:checked ~ .fsp-status,
 .fsp-status.active {
     color: var(--text-success);
+}
+
+.fsp-error {
+    color: #e08080;
 }

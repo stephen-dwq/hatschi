@@ -2391,11 +2391,11 @@ let ProvinceMap = {
 
 	/**
 	 * Get provinces that should be targeted for conquest.
-	 * Delegates to gbgAuto fire-control when available.
+	 * Delegates to gbg fire-control when available.
 	 */
 	getTargetProvinces: () => {
-		if (typeof gbgAuto !== 'undefined' && gbgAuto.getTargetProvinces) {
-			return gbgAuto.getTargetProvinces();
+		if (typeof gbg !== 'undefined' && gbg.getTargetProvinces) {
+			return gbg.getTargetProvinces();
 		}
 
 		return [];

@@ -1,0 +1,170 @@
+/**
+ * Heroic Endeavor CSS formatter for FoEProxy
+ * Used by heroic.js
+ */
+
+#heroicMenu {
+    top: calc(50vh - 220px);
+    left: calc(50vw - 200px);
+}
+
+#heroicMenuBody {
+    width: 400px;
+    padding: 8px 0 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.heroic-section {
+    width: 100%;
+    padding: 8px 14px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.heroic-section.dark-bg {
+    background: var(--dark-bg, rgba(0, 0, 0, 0.25));
+}
+
+.heroic-label {
+    font-size: 80%;
+    color: var(--bright-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: default;
+}
+
+.heroic-value {
+    color: var(--bright-color);
+    font-size: 95%;
+}
+
+.heroic-toggle {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.heroic-toggle .heroic-label {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 95%;
+}
+
+.heroic-status {
+    color: var(--bright-color);
+    font-size: 85%;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.heroic-chain {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 95%;
+}
+
+.heroic-chain-label {
+    flex: 1;
+    color: var(--text-color, #ccc);
+}
+
+.heroic-input {
+    background: var(--input-bg, rgba(0, 0, 0, 0.4));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    border-radius: 3px;
+    color: var(--bright-color);
+    padding: 4px 6px;
+    width: 140px;
+}
+
+.heroic-slider-container input[type="range"] {
+    width: 100%;
+}
+
+.heroic-stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 90%;
+}
+
+.heroic-quest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.heroic-quest-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: var(--input-bg, rgba(0, 0, 0, 0.4));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    border-radius: 3px;
+    font-size: 90%;
+}
+
+.heroic-quest-title {
+    color: var(--text-color, #ccc);
+    font-weight: bold;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.heroic-quest-detail {
+    color: var(--bright-color);
+    font-size: 85%;
+    white-space: nowrap;
+}
+
+.heroic-tag {
+    font-size: 75%;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.heroic-tag-milestone {
+    color: #8ef0b0;
+    border: 1px solid rgba(142, 240, 176, 0.4);
+}
+
+.heroic-tag-uncollected {
+    color: #f5d76e;
+    border: 1px solid rgba(245, 215, 110, 0.4);
+}
+
+.heroic-tag-fight {
+    color: #c8b8f0;
+    border: 1px solid rgba(200, 184, 240, 0.4);
+}
+
+.heroic-tag-pay {
+    color: #8ec8f0;
+    border: 1px solid rgba(142, 200, 240, 0.4);
+}
+
+.heroic-empty {
+    color: var(--text-muted, #888);
+    text-align: center;
+    padding: 12px 0;
+    font-size: 90%;
+}
+
+.heroic-error {
+    color: #e08080;
+}

@@ -644,6 +644,10 @@ p {
 	background-image: url('../images/menu/store.png');
 }
 
+[id$=heroic-Btn] span {
+	background-image: url('../images/menu/allies.png');
+}
+
 [id$=allies-Btn] span {
 	background-image: url('../images/menu/allies.png');
 }
